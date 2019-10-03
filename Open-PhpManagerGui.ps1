@@ -317,7 +317,8 @@ class ServerService {
                 }
             }
             $this.Controller.Refresh()
-        } finally {
+        }
+        finally {
             ShowSpinner($false);
         }
         $this.RefreshState()
