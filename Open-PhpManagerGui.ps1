@@ -288,33 +288,38 @@ class ServerService {
             })
     }
     Execute([bool] $restart) {
-        $requireRunAs = $false
-        $currentUser = [System.Security.Principal.WindowsPrincipal] [System.Security.Principal.WindowsIdentity]::GetCurrent()
-        if (-Not($currentUser.IsInRole([System.Security.Principal.WindowsBuiltInRole]::Administrator))) {
-            $requireRunAs = $true
-        }
-        if ($requireRunAs) {
-            if ($restart) {
-                $exeCommand = "Restart-Service -Name '$($this.Controller.Name)' -WarningAction SilentlyContinue"
+        ShowSpinner($true);
+        try {
+            $requireRunAs = $false
+            $currentUser = [System.Security.Principal.WindowsPrincipal] [System.Security.Principal.WindowsIdentity]::GetCurrent()
+            if (-Not($currentUser.IsInRole([System.Security.Principal.WindowsBuiltInRole]::Administrator))) {
+                $requireRunAs = $true
+            }
+            if ($requireRunAs) {
+                if ($restart) {
+                    $exeCommand = "Restart-Service -Name '$($this.Controller.Name)' -WarningAction SilentlyContinue"
+                }
+                else {
+                    $exeCommand = "Start-Service -Name '$($this.Controller.Name)' -WarningAction SilentlyContinue"
+                }
+                try {
+                    Start-Process -FilePath 'powershell.exe' -ArgumentList "-Command ""$exeCommand""" -WindowStyle Hidden -Verb RunAs -Wait
+                }
+                catch {
+                }
             }
             else {
-                $exeCommand = "Start-Service -Name '$($this.Controller.Name)' -WarningAction SilentlyContinue"
+                if ($restart) {
+                    Restart-Service -Name $this.Controller.Name 2>&1 -WarningAction SilentlyContinue
+                }
+                else {
+                    Start-Service -Name $this.Controller.Name 2>&1 -WarningAction SilentlyContinue
+                }
             }
-            try {
-                Start-Process -FilePath 'powershell.exe' -ArgumentList "-Command ""$exeCommand""" -WindowStyle Hidden -Verb RunAs -Wait
-            }
-            catch {
-            }
+            $this.Controller.Refresh()
+        } finally {
+            ShowSpinner($false);
         }
-        else {
-            if ($restart) {
-                Restart-Service -Name $this.Controller.Name 2>&1 -WarningAction SilentlyContinue
-            }
-            else {
-                Start-Service -Name $this.Controller.Name 2>&1 -WarningAction SilentlyContinue
-            }
-        }
-        $this.Controller.Refresh()
         $this.RefreshState()
     }
     RefreshState() {
