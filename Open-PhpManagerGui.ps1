@@ -295,10 +295,10 @@ class ServerService {
         }
         if ($requireRunAs) {
             if ($restart) {
-                $exeCommand = "Restart-Service -Name '$($this.Controller.Name)' -Verbose"
+                $exeCommand = "Restart-Service -Name '$($this.Controller.Name)' -WarningAction SilentlyContinue"
             }
             else {
-                $exeCommand = "Start-Service -Name '$($this.Controller.Name)' -Verbose"
+                $exeCommand = "Start-Service -Name '$($this.Controller.Name)' -WarningAction SilentlyContinue"
             }
             try {
                 Start-Process -FilePath 'powershell.exe' -ArgumentList "-Command ""$exeCommand""" -WindowStyle Hidden -Verb RunAs -Wait
@@ -308,10 +308,10 @@ class ServerService {
         }
         else {
             if ($restart) {
-                Restart-Service -Name $this.Controller.Name 2>&1 | Out-Null
+                Restart-Service -Name $this.Controller.Name 2>&1 -WarningAction SilentlyContinue
             }
             else {
-                Start-Service -Name $this.Controller.Name 2>&1 | Out-Null
+                Start-Service -Name $this.Controller.Name 2>&1 -WarningAction SilentlyContinue
             }
         }
         $this.Controller.Refresh()
