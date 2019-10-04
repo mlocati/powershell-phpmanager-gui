@@ -149,7 +149,7 @@ class PhpExtension {
                         Enable-PhpExtension $this.Text
                     }
                     else {
-                        Disable-PhpExtension $this.Text
+                        Disable-PhpExtension $this.Text -Comment
                     }
                 }
                 catch {
