@@ -368,7 +368,7 @@ $Script:ServerService = $null
 
 $serviceControllers = Get-Service
 
-[string[]]'Nginx', 'Apache' | ForEach-Object {
+[string[]]'PHP', 'FPM', 'Apache' | ForEach-Object {
     if ($null -eq $Script:ServerService) {
         $serviceController = $serviceControllers | Where-Object -Property Name -Match "^$_\s*(v?.?\s*\d.*)?$"
         if ($serviceController) {
